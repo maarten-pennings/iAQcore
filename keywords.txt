@@ -13,7 +13,7 @@
 # Classes, datatypes (KEYWORD1)
 #######################################
 iAQcore	KEYWORD1
-
+iaqcore	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
