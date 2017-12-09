@@ -107,26 +107,33 @@ To build an example sketch
  - Enjoy the output, which should be like this for `iAQcore-simple`:
 
      ```Text
-     Starting ENS210 simple demo
-     19.9 C, 59 %RH
-     23.1 C, 79 %RH
-     23.1 C, 79 %RH
-     27.7 C, 94 %RH
-     26.5 C, 95 %RH
-     23.5 C, 94 %RH
-     21.1 C, 94 %RH
-     20.2 C, 94 %RH
-     20.1 C, 94 %RH
-     19.4 C, 87 %RH
-     19.3 C, 79 %RH
-     19.3 C, 68 %RH
+     Starting iAQcore simple demo
+     iAQcore: eco2=456 ppm,  stat=0x0,  resist=363157 ohm,  tvoc=127 ppb
+     iAQcore: eco2=453 ppm,  stat=0x0,  resist=363586 ohm,  tvoc=126 ppb
+     iAQcore: eco2=455 ppm,  stat=0x0,  resist=363157 ohm,  tvoc=127 ppb
+     iAQcore: eco2=450 ppm,  stat=0x0,  resist=364447 ohm,  tvoc=125 ppb
+     iAQcore: eco2=450 ppm,  stat=0x0,  resist=364878 ohm,  tvoc=125 ppb
+     iAQcore: eco2=605 ppm,  stat=0x0,  resist=331010 ohm,  tvoc=168 ppb
+     iAQcore: eco2=1560 ppm,  stat=0x0,  resist=212175 ohm,  tvoc=431 ppb
+     iAQcore: eco2=3721 ppm,  stat=0x0,  resist=117065 ohm,  tvoc=1026 ppb
+     iAQcore: eco2=4749 ppm,  stat=0x0,  resist=96488 ohm,  tvoc=1309 ppb
+     iAQcore: eco2=6127 ppm,  stat=0x0,  resist=78091 ohm,  tvoc=1689 ppb
+     iAQcore: eco2=4822 ppm,  stat=0x0,  resist=95307 ohm,  tvoc=1329 ppb
+     iAQcore: eco2=3645 ppm,  stat=0x0,  resist=118936 ohm,  tvoc=1005 ppb
+     iAQcore: eco2=2830 ppm,  stat=0x0,  resist=143618 ohm,  tvoc=781 ppb
+     iAQcore: eco2=2221 ppm,  stat=0x0,  resist=169921 ohm,  tvoc=613 ppb
+     iAQcore: eco2=1483 ppm,  stat=0x0,  resist=218476 ohm,  tvoc=410 ppb
+     iAQcore: eco2=1091 ppm,  stat=0x0,  resist=257597 ohm,  tvoc=302 ppb
+     iAQcore: eco2=912 ppm,  stat=0x0,  resist=280448 ohm,  tvoc=253 ppb
+     iAQcore: eco2=852 ppm,  stat=0x0,  resist=289063 ohm,  tvoc=236 ppb
+     iAQcore: eco2=824 ppm,  stat=0x0,  resist=293181 ohm,  tvoc=228 ppb
      ```
 
-##Clock stretching
+## Clock stretching
 I2C _slave_ devices, such as the iAQcore, are controlled by I2C _masters_, such as the ESP8266, pro mini or nano.
-The master sends is in charge of the communication to the slave, thereby toggling the clock line (SCL) high and low.
+The master is in charge of the communication to the slave: it toggles the clock line (SCL) high and low.
 Each clock pulse one bit is transferred between the master and the slave (from or to).
-If the slave is not yet ready, it may _stretch the clock_.
+If the slave is not yet ready, it may _stretch the clock_, i.e. force it low, so that the master can not complete the pulse.
 
 The figure below shows that after the master has send the address byte of the iAQcore, this iAQcore chip
 stretches the SCL line for 306.8 us. 
