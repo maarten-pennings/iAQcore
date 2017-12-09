@@ -53,36 +53,41 @@ This library has been tested with three boards.
 
 For the NodeMCU (ESP8266), connect as follows (I did not use pull-ups, presumably they are inside the MCU)
 
-| ENS210 | ESP8266 |
-|:------:|:-------:|
-|   VDD  |   3V3   |
-|   GND  |   GND   |
-|   SDA  |   D2    |
-|   SCL  |   D1    |
+| iAQcore | ESP8266 |
+|:-------:|:-------:|
+|   VCC   |   3V3   |
+|   GND   |   GND   |
+|   SDA   |   D2    |
+|   SCL   |   D1    |
 
 ![wiring ESP8266 NoeMCU](wire-esp.jpg)
 
 For the Pro mini (do *not* use a 5V board), connect as follows  (I did not use pull-ups, presumably they are inside the MCU)
 
-| ENS210 | Pro mini |
-|:------:|:--------:|
-|   VDD  |   VCC    |
-|   GND  |   GND    |
-|   SDA  |    A4    |
-|   SCL  |    A5    |
+| iAQcore | Pro mini |
+|:-------:|:--------:|
+|   VCC   |   VCC    |
+|   GND   |   GND    |
+|   SDA   |    A4    |
+|   SCL   |    A5    |
 
 ![wiring pro mini](wire-promini.jpg)
 
 For the Arduino Nano, connect as follows  (I did not use pull-ups, presumably they are inside the MCU)
 
-| ENS210 |   Nano   |
-|:------:|:--------:|
-|   VDD  |   3V3    |
-|   GND  |   GND    |
-|   SDA  |    A4    |
-|   SCL  |    A5    |
+| iAQcore |   Nano   |
+|:-------:|:--------:|
+|   VCC   |   3V3    |
+|   GND   |   GND    |
+|   SDA   |    A4    |
+|   SCL   |    A5    |
 
 ![wiring nano](wire-nanov3.jpg)
+
+Connect the iAQcore module as follows
+
+![wiring iAQcore](wire-iaqcore.jpg)
+
 
 ## Flash an example
 To build an example sketch
