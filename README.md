@@ -10,7 +10,7 @@ The code has been tested with
  - [Arduino pro mini](https://www.aliexpress.com/item/ProMini-ATmega328P-3-3V-Compatible-for-Arduino-Pro-Mini/32525927539.html)
  - [Arduino nano](https://www.aliexpress.com/item/Nano-CH340-ATmega328P-MicroUSB-Compatible-for-Arduino-Nano-V3/32572612009.html)
 
-Note that the ENS210 requires a supply voltage of 1.71V .. 3.6V.
+Note that the iAQcore requires a supply voltage of 3.3V ± 0.1V.
 So, 3.3V is ok, but *do not use a 5V board*.
 The Nano has 3v3 supply, but runs I2C on 5V. This does seem to work.
 
