@@ -32,7 +32,7 @@ void setup() {
 void loop() {
   // Read
   uint16_t eco2;
-  uint8_t  stat;
+  uint16_t stat;
   uint32_t resist;
   uint16_t etvoc;
   iaqcore.read(&eco2,&stat,&resist,&etvoc);

@@ -4,23 +4,28 @@
 */
 
 /*
-This script assumes you
-- have (created) an ThingSpeak account
-- have (created) a channel for iAQcore measurements
+This script assumes you have
+- installed the iAQcore Arduino library 
+   Goto https://github.com/maarten-pennings/iAQcore, press Download zipfile
+   Click Sketch > Include Library > Add .ZIP Library...  then select downloaded zip file
+- installed the ThingSpeak Arduino library 
+   Sketch > Include Library > Manage Libraries > ThingSpeak > Install
+- a ThingSpeak account
+- a channel for iAQcore measurements
 - created 4 fields for that channel:
    + Field 1: eCO2 (ppm)
    + Field 2: status
    + Field 3: resistance (Ω)
    + Field 4: eTVOC (ppb)
-- used the "Channel ID" of that channel as initializer for thingspeakChannelId
-- used the "Write API Key" of that channel as initializer for thingspeakWriteApiKey
+- used the "Channel ID" of that channel as initializer for thingspeakChannelId (see below)
+- used the "Write API Key" of that channel as initializer for thingspeakWriteApiKey (see below)
 */
 
 
 #include <Wire.h>        // I2C library
 #include <ESP8266WiFi.h> // ESP8266 WiFi library
-#include "ThingSpeak.h"  // In Arduino IDE: Sketch > Include Library > Manage Libraries > ThingSpeak > Install
-#include "iAQcore.h"     // Install from https://github.com/maarten-pennings/iAQcore
+#include "ThingSpeak.h"  // ThingSpeak library
+#include "iAQcore.h"     // iAQcore library
 
 
 #define LED_PIN    D4    // GPIO2 == D4 == standard BLUE led available on most NodeMCU boards (LED on == D4 low)
@@ -38,13 +43,35 @@ This script assumes you
   unsigned long thingspeakChannelId   = 1234567; // Your ThingSpeak Channel ID 
   const char *  thingspeakWriteApiKey = "xxxxx"; // Your ThingSpeak write api key
 #else
-  // File that contains (my secret) credentails for WiFi and ThingSpeak
+  // File that contains (my secret) credentials for WiFi and ThingSpeak
   #include "credentials.h"
 #endif
 
 
 WiFiClient  client;
 iAQcore     iaqcore;
+
+
+// Wrapper calling iaqcore.read. It updates the arguments when the read was successful.
+void iAQcore_read(uint16_t * eco2, uint16_t * stat, uint32_t * resist, uint16_t * etvoc) {
+  // Read the iAQcore
+  uint16_t _eco2;
+  uint16_t _stat;
+  uint32_t _resist;
+  uint16_t _etvoc;
+  iaqcore.read(&_eco2,&_stat,&_resist,&_etvoc);
+  
+  // Use new values
+  if( _stat & (IAQCORE_STAT_I2CERR|IAQCORE_STAT_ERROR|IAQCORE_STAT_BUSY) ) {
+    // Errors, so keep old values except stat
+    *stat= _stat;
+  } else {
+    *eco2= _eco2;
+    *stat= _stat;
+    *resist= _resist;
+    *etvoc= _etvoc;
+  }
+}
 
 
 void setup() {
@@ -68,7 +95,9 @@ void setup() {
   Serial.println(ok ? "init: iAQcore up" : "init: iAQcore ERROR");
 
   // Enable WiFi
-  Serial.print("init: WiFi ");
+  Serial.print("init: WiFi '");
+  Serial.print(wifiSsid);
+  Serial.print("' ");
   WiFi.begin(wifiSsid, wifiPassword);
   while( true) {
     if( WiFi.status()==WL_CONNECTED ) break;
@@ -86,7 +115,10 @@ void setup() {
 }
 
 
-#define IAQCORE_STAT9_ERROR 0x100
+uint16_t eco2= 450;
+uint16_t stat;
+uint32_t resist= 0xA5A5A5;
+uint16_t etvoc= 125;
 
 
 void loop() {
@@ -94,45 +126,27 @@ void loop() {
   led_on();
   
   // Read the iAQcore
-  uint16_t eco2;
-  uint8_t  stat8;
-  uint32_t resist;
-  uint16_t etvoc;
-  bool ok=iaqcore.read(&eco2,&stat8,&resist,&etvoc);
-  uint16_t stat9 = ok ? stat8 : (stat8|IAQCORE_STAT9_ERROR); // Raise bit outsode byte to denote I2C error
-
-  // On error, use previous values for iAQcore
-  static uint16_t prev_eco2= 450;
-  static uint32_t prev_resist= 0x555555;
-  static uint16_t prev_etvoc= 125;
-  if( stat9 & (IAQCORE_STAT9_ERROR|IAQCORE_STAT_ERROR|IAQCORE_STAT_BUSY) ) {
-    eco2= prev_eco2;
-    resist= prev_resist;
-    etvoc= prev_etvoc;
-  }
-  prev_eco2= eco2;
-  prev_resist= resist;
-  prev_etvoc= etvoc;
+  iAQcore_read(&eco2,&stat,&resist,&etvoc);
   
   // Print
-  if( stat9 & IAQCORE_STAT9_ERROR ) {
+  if( stat & IAQCORE_STAT_I2CERR ) {
     Serial.println("data: I2C error");
-  } else if( stat9 & IAQCORE_STAT_ERROR ) {
+  } else if( stat & IAQCORE_STAT_ERROR ) {
     Serial.println("data: chip broken");
-  } else if( stat9 & IAQCORE_STAT_BUSY ) {
+  } else if( stat & IAQCORE_STAT_BUSY ) {
     Serial.println("data: chip busy");
   } else {
     Serial.print("data: ");
-    Serial.print("eco2=");    Serial.print(eco2);     Serial.print(" ppm,  ");
-    Serial.print("stat9=0x"); Serial.print(stat9,HEX);Serial.print(",  ");
-    Serial.print("resist=");  Serial.print(resist);   Serial.print(" ohm,  ");
-    Serial.print("tvoc=");    Serial.print(etvoc);    Serial.print(" ppb  ");
+    Serial.print("eco2=");   Serial.print(eco2);     Serial.print(" ppm,  ");
+    Serial.print("stat=0x"); Serial.print(stat,HEX); Serial.print(",  ");
+    Serial.print("resist="); Serial.print(resist);   Serial.print(" ohm,  ");
+    Serial.print("tvoc=");   Serial.print(etvoc);    Serial.print(" ppb  ");
     Serial.println();
   } 
 
   // Send to ThingSpeak
   ThingSpeak.setField(1,(int)eco2);
-  ThingSpeak.setField(2,(int)stat9);
+  ThingSpeak.setField(2,(int)stat);
   ThingSpeak.setField(3,(int)resist);
   ThingSpeak.setField(4,(int)etvoc);
   ThingSpeak.writeFields(thingspeakChannelId, thingspeakWriteApiKey);  

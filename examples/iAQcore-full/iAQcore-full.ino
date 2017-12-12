@@ -33,17 +33,17 @@ void setup() {
 void loop() {
   // Read
   uint16_t eco2;
-  uint8_t  stat;
+  uint16_t stat;
   uint32_t resist;
   uint16_t etvoc;
-  bool ok=iaqcore.read(&eco2,&stat,&resist,&etvoc);
+  iaqcore.read(&eco2,&stat,&resist,&etvoc);
   
   // Print
-  if( !ok ) {
+  if( stat & IAQCORE_STAT_I2CERR ) {
     Serial.println("iAQcore: I2C error");
-  } else if( stat&IAQCORE_STAT_ERROR ) {
+  } else if( stat & IAQCORE_STAT_ERROR ) {
     Serial.println("iAQcore: chip broken");
-  } else if( stat&IAQCORE_STAT_BUSY ) {
+  } else if( stat & IAQCORE_STAT_BUSY ) {
     Serial.println("iAQcore: chip busy");
   } else {
     Serial.print("iAQcore: ");
