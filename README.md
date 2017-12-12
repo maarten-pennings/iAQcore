@@ -34,12 +34,12 @@ Installation steps
  - Visit the [project page](https://github.com/maarten-pennings/iAQcore) for the Arduino iAQcore library.
  - Click the green button `Clone or download` on the right side.
  - From the pop-up choose `Download ZIP`.
- - Unzip the file "Here", so that this `README.md` is in the top-level directory
-   with the name `iAQcore-master`.
- - Rename the top-level directory `iAQcore-master` to `iAQcore`.
- - Copy the entire tree to the Arduino library directory.
-   This `README.md` should be located at e.g.
-   `C:\Users\maarten\Documents\Arduino\libraries\iAQcore\README.md`.
+ - Start Arduino, select from menu Sketch > Include Library > Add .ZIP Library... and select the just downloaded ZIP file.
+ - An alternative to the last step is to manually add the library
+    - Unzip the file "Here", so that this `README.md` is in the top-level directory with the name `iAQcore-master`.
+    - Copy the entire tree to the Arduino library directory.
+      This `README.md` should be located at e.g.
+      `C:\Users\maarten\Documents\Arduino\libraries\iAQcore\README.md`.
 
 ## Build an example
 To build an example sketch
@@ -138,14 +138,14 @@ To build an example sketch
 I2C _slave_ devices, such as the iAQcore, are controlled by I2C _masters_, such as the ESP8266, pro mini or nano.
 The master is in charge of the communication to the slave: it toggles the clock line (SCL) high and low.
 Each clock pulse one bit is transferred between the master and the slave (from or to).
-If the slave is not yet ready, it may _stretch the clock_, i.e. force it low, so that the master can not complete the pulse.
+If the slave is not yet ready, it may _stretch the clock_, i.e. force the SCL line low, so that the master can not complete the pulse.
 
 The figure below shows that after the master has send the address byte of the iAQcore, this iAQcore chip
 stretches the SCL line for 306.8 us. 
 
 ![Clock stretching](iaqcore-clock-stretch.png)
 
-Unfortunately, the ESP8266 I2C library has a clock stretch timeout of 230us.
+Unfortunately, the ESP8266 I2C library has a clock stretch timeout of [230us](https://github.com/esp8266/Arduino/blob/master/cores/esp8266/core_esp8266_si2c.c#L74).
 So, this timeout must be set to a higher value: `Wire.setClockStretchLimit(1000)`.
 
 (end of doc)
