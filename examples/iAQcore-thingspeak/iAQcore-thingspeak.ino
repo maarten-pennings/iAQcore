@@ -4,7 +4,8 @@
 */
 
 /*
-This script assumes you have
+This sketch assumes you have
+- an ESP8266
 - installed the iAQcore Arduino library 
    Goto https://github.com/maarten-pennings/iAQcore, press Download zipfile
    Click Sketch > Include Library > Add .ZIP Library...  then select downloaded zip file
