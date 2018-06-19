@@ -96,9 +96,11 @@ void setup() {
   Serial.println(ok ? "init: iAQcore up" : "init: iAQcore ERROR");
 
   // Enable WiFi
+  Serial.printf("init: MAC %s\n",WiFi.macAddress().c_str());
   Serial.print("init: WiFi '");
   Serial.print(wifiSsid);
   Serial.print("' ");
+  WiFi.mode(WIFI_STA);
   WiFi.begin(wifiSsid, wifiPassword);
   while( true) {
     if( WiFi.status()==WL_CONNECTED ) break;
