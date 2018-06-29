@@ -1,5 +1,5 @@
 /*
-  iAQcore-full.ino - Full demo sketch (including error handling) printing results of the iAQ-core indoor air quality sensor module with I2C interface from ams.
+  iAQcore-full.ino - Full demo sketch (including error handling) printing results of the iAQ-Core indoor air quality sensor module with I2C interface from ams.
   Created by Maarten Pennings 2017 Dec 9
 */
 
@@ -15,7 +15,7 @@ void setup() {
   // Enable serial
   Serial.begin(115200);
   Serial.println("");
-  Serial.println("Starting iAQcore full demo");
+  Serial.println("Starting iAQ-Core full demo");
 
   // Enable I2C for ESP8266 NodeMCU boards [VDD to 3V3, GND to GND, SDA to D2, SCL to D1]
   //Wire.begin(/*SDA*/D2,/*SCL*/D1); 
@@ -24,9 +24,9 @@ void setup() {
   // Enable I2C for Arduino pro mini or Nano [VDD to VCC/3V3, GND to GND, SDA to A4, SCL to A5]
   Wire.begin(); 
 
-  // Enable iAQcore
+  // Enable iAQ-Core
   bool ok= iaqcore.begin();
-  Serial.println(ok ? "iAQcore initialized" : "ERROR initializing iAQcore");
+  Serial.println(ok ? "iAQ-Core initialized" : "ERROR initializing iAQ-Core");
 }
 
 

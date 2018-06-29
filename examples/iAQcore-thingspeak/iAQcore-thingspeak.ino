@@ -1,5 +1,5 @@
 /*
-  iAQcore-thingspeak.ino - Upload iAQcore (indoor air quality) measurements to a ThingSpeak channel from an ESP8266.
+  iAQcore-thingspeak.ino - Upload iAQ-Core (indoor air quality) measurements to a ThingSpeak channel from an ESP8266.
   Created by Maarten Pennings 2017 Dec 9
 */
 
@@ -12,7 +12,7 @@ This sketch assumes you have
 - installed the ThingSpeak Arduino library 
    Sketch > Include Library > Manage Libraries > ThingSpeak > Install
 - a ThingSpeak account
-- a channel for iAQcore measurements
+- a channel for iAQ-Core measurements
 - created 4 fields for that channel:
    + Field 1: eCO2 (ppm)
    + Field 2: status
@@ -55,7 +55,7 @@ iAQcore     iaqcore;
 
 // Wrapper calling iaqcore.read. It updates the arguments when the read was successful.
 void iAQcore_read(uint16_t * eco2, uint16_t * stat, uint32_t * resist, uint16_t * etvoc) {
-  // Read the iAQcore
+  // Read the iAQ-Core
   uint16_t _eco2;
   uint16_t _stat;
   uint32_t _resist;
@@ -79,7 +79,7 @@ void setup() {
   // Enable serial
   Serial.begin(115200);
   Serial.println("");
-  Serial.println("Starting iAQcore to ThingSpeak");
+  Serial.println("Starting iAQ-Core to ThingSpeak");
 
   // Enable LED
   led_init();
@@ -91,9 +91,9 @@ void setup() {
   Wire.setClockStretchLimit(1000); 
   Serial.println("init: I2C up");
   
-  // Enable iAQcore
+  // Enable iAQ-Core
   bool ok= iaqcore.begin();
-  Serial.println(ok ? "init: iAQcore up" : "init: iAQcore ERROR");
+  Serial.println(ok ? "init: iAQ-Core up" : "init: iAQ-Core ERROR");
 
   // Enable WiFi
   Serial.printf("init: MAC %s\n",WiFi.macAddress().c_str());
@@ -128,7 +128,7 @@ void loop() {
   // Signal start-of-measurement
   led_on();
   
-  // Read the iAQcore
+  // Read the iAQ-Core
   iAQcore_read(&eco2,&stat,&resist,&etvoc);
   
   // Print
