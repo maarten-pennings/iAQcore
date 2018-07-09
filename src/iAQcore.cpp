@@ -26,7 +26,7 @@ bool iAQcore::begin(void) {
   read(0,0,&resist,0);  
   if( stat & IAQCORE_STAT_I2CERR ) { PRINTLN("iAQcore: begin(): Could not access iAQ-Core chip (I2C)"); return false; }
   // Check if the wire library does wait long enough for the clock stretching needed by the iAQ-Core (data sheet specs that MSB of resist is 0x00)
-  if( (resist>>24)==0xFF )  { PRINTLN("iAQcore: begin(): Is there 'Wire.setClockStretchLimit(1000)' after 'Wire.begin()'?"); return false; }
+  if( (resist>>24)==0xFF )  { PRINTLN("iAQcore: begin(): Is there 'Wire.setClockStretchLimit()' after 'Wire.begin()'?"); return false; }
   // All ok
   return true;
 }
@@ -35,7 +35,7 @@ bool iAQcore::begin(void) {
 // Reads measurement date from the iAQ-Core chip (returns true if successful). Any parameter may be NULL.
 void iAQcore::read(uint16_t * eco2, uint16_t * stat, uint32_t * resist, uint16_t * etvoc ) {
   // Try to read the measurement data block.
-  int num= Wire.requestFrom((uint8_t)IAQCORE_I2CADDR,(size_t)IAQCORE_SIZE,true); 
+  int num= Wire.requestFrom((uint8_t)IAQCORE_I2CADDR,(size_t)IAQCORE_SIZE); 
   // Get bytes into local buf
   uint8_t buf[IAQCORE_SIZE];
   for( int i=0; i<IAQCORE_SIZE; i++ ) buf[i]= Wire.read();

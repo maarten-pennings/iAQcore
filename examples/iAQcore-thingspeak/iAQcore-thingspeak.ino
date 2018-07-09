@@ -88,7 +88,7 @@ void setup() {
   
   // Enable I2C for ESP8266 NodeMCU boards [VDD to 3V3, GND to GND, SDA to D2, SCL to D1]
   Wire.begin(/*SDA*/D2,/*SCL*/D1); 
-  Wire.setClockStretchLimit(1000); 
+  Wire.setClockStretchLimit(470); 
   Serial.println("init: I2C up");
   
   // Enable iAQ-Core
