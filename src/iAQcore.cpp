@@ -23,7 +23,7 @@ bool iAQcore::begin(void) {
   // Check if device is accessible (by getting a measurement data block)
   uint16_t stat;
   uint32_t resist;
-  read(0,0,&resist,0);  
+  read(0,&stat,&resist,0);  
   if( stat & IAQCORE_STAT_I2CERR ) { PRINTLN("iAQcore: begin(): Could not access iAQ-Core chip (I2C)"); return false; }
   // Check if the wire library does wait long enough for the clock stretching needed by the iAQ-Core (data sheet specs that MSB of resist is 0x00)
   if( (resist>>24)==0xFF )  { PRINTLN("iAQcore: begin(): Is there 'Wire.setClockStretchLimit()' after 'Wire.begin()'?"); return false; }
@@ -41,7 +41,7 @@ void iAQcore::read(uint16_t * eco2, uint16_t * stat, uint32_t * resist, uint16_t
   for( int i=0; i<IAQCORE_SIZE; i++ ) buf[i]= Wire.read();
   // Pack into output parameters (little endian)
   if( eco2  !=0 ) *eco2  =  (buf[0]<<8) + (buf[1]<<0);
-  if( stat  !=0 ) *stat  =  (num==IAQCORE_SIZE ? 0 : IAQCORE_STAT_I2CERR ) + (buf[2]<<0);
+  if( stat  !=0 ) *stat  =  ( num==IAQCORE_SIZE ? 0 : IAQCORE_STAT_I2CERR ) + (buf[2]<<0);
   if( resist!=0 ) *resist=  ((uint32_t)buf[3]<<24) + ((uint32_t)buf[4]<<16) + ((uint32_t)buf[5]<<8) + ((uint32_t)buf[6]<<0); 
   if( etvoc !=0 ) *etvoc =  (buf[7]<<8) + (buf[8]<<0);
 }
