@@ -19,7 +19,7 @@ void setup() {
 
   // Enable I2C for ESP8266 NodeMCU boards [VDD to 3V3, GND to GND, SDA to D2, SCL to D1]
   Wire.begin(/*SDA*/D2,/*SCL*/D1); 
-  Wire.setClockStretchLimit(470); 
+  Wire.setClockStretchLimit(1000); // 500ms is not enough
   
   // Enable I2C for Arduino pro mini or Nano [VDD to VCC/3V3, GND to GND, SDA to A4, SCL to A5]
   //Wire.begin(); 

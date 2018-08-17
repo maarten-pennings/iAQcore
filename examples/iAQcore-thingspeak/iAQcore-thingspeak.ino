@@ -5,7 +5,10 @@
 
 /*
 This sketch assumes you have
-- an ESP8266
+- an ESP8266 with an iAQ-Core attached to I2C (SDA/D2 and SCL/D1)
+- installed the I2C bus clear library (is optional)
+   Goto https://github.com/maarten-pennings/I2Cbus, press Download zipfile
+   Click Sketch > Include Library > Add .ZIP Library...  then select downloaded zip file
 - installed the iAQcore Arduino library 
    Goto https://github.com/maarten-pennings/iAQcore, press Download zipfile
    Click Sketch > Include Library > Add .ZIP Library...  then select downloaded zip file
@@ -24,11 +27,10 @@ This sketch assumes you have
 
 
 #include <Wire.h>        // I2C library
+#include <I2Cbus.h>      // I2Cbus library
 #include <ESP8266WiFi.h> // ESP8266 WiFi library
 #include "ThingSpeak.h"  // ThingSpeak library
 #include "iAQcore.h"     // iAQcore library
-
-
 #define LED_PIN    D4    // GPIO2 == D4 == standard BLUE led available on most NodeMCU boards (LED on == D4 low)
 #define led_init() pinMode(LED_PIN, OUTPUT)
 #define led_on()   digitalWrite(LED_PIN, LOW)
@@ -85,10 +87,13 @@ void setup() {
   led_init();
   Serial.println("init: LED up");
   led_on();
-  
+
+  // I2C bus clear
+  Serial.printf("init: I2C bus: %s\n", I2Cbus_statusstr(I2Cbus_clear(SDA,SCL)));
+
   // Enable I2C for ESP8266 NodeMCU boards [VDD to 3V3, GND to GND, SDA to D2, SCL to D1]
-  Wire.begin(/*SDA*/D2,/*SCL*/D1); 
-  Wire.setClockStretchLimit(470); 
+  Wire.begin(SDA,SCL); 
+  Wire.setClockStretchLimit(1000); // 500ms is not enough
   Serial.println("init: I2C up");
   
   // Enable iAQ-Core

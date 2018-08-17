@@ -4,8 +4,9 @@
 */
 
 
-#include <Wire.h>   // I2C library
-#include "iAQcore.h"
+#include <Wire.h>    // I2C library
+//#include <I2Cbus.h>// I2Cbus library (https://github.com/maarten-pennings/I2Cbus)
+#include "iAQcore.h" // iAQ-Core driver
 
 
 iAQcore iaqcore;
@@ -17,9 +18,12 @@ void setup() {
   Serial.println("");
   Serial.println("Starting iAQ-Core full demo");
 
+  // Optional: I2C bus clear
+  //Serial.println(I2Cbus_statusstr(I2Cbus_clear(SDA,SCL)));
+
   // Enable I2C for ESP8266 NodeMCU boards [VDD to 3V3, GND to GND, SDA to D2, SCL to D1]
-  Wire.begin(/*SDA*/D2,/*SCL*/D1); 
-  Wire.setClockStretchLimit(470); 
+  Wire.begin(SDA,SCL); 
+  Wire.setClockStretchLimit(1000); // 500ms is not enough
   
   // Enable I2C for Arduino pro mini or Nano [VDD to VCC/3V3, GND to GND, SDA to A4, SCL to A5]
   //Wire.begin(); 
