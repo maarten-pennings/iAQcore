@@ -2,6 +2,8 @@
   iAQcore-thingspeak.ino - Upload iAQ-Core (indoor air quality) measurements to a ThingSpeak channel from an ESP8266.
   Created by Maarten Pennings 2017 Dec 9
 */
+#define VERSION "v7"
+
 
 /*
 This sketch assumes you have
@@ -81,7 +83,7 @@ void setup() {
   // Enable serial
   Serial.begin(115200);
   Serial.println("");
-  Serial.println("Starting iAQ-Core to ThingSpeak");
+  Serial.println("Starting iAQ-Core to ThingSpeak " VERSION);
 
   // Enable LED
   led_init();
