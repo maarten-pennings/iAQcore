@@ -2,12 +2,15 @@
   iAQcore-thingspeak.ino - Upload iAQ-Core (indoor air quality) measurements to a ThingSpeak channel from an ESP8266.
   Created by Maarten Pennings 2017 Dec 9
 */
-#define VERSION "v7"
+#define VERSION "v8"
 
 
 /*
 This sketch assumes you have
 - an ESP8266 with an iAQ-Core attached to I2C (SDA/D2 and SCL/D1)
+   Arduino   Board: "NodeMCU 1.0 (ESP-12E Module)"
+   Arduino   lwIP Variant: "v2 Lower Memory"
+   Arduino   CPU Frequency: "80 MHz"
 - installed the I2C bus clear library (is optional)
    Goto https://github.com/maarten-pennings/I2Cbus, press Download zipfile
    Click Sketch > Include Library > Add .ZIP Library...  then select downloaded zip file
@@ -18,7 +21,7 @@ This sketch assumes you have
    Sketch > Include Library > Manage Libraries > ThingSpeak > Install
 - a ThingSpeak account
 - a channel for iAQ-Core measurements
-- created 4 fields for that channel:
+- four fields for that channel:
    + Field 1: eCO2 (ppm)
    + Field 2: status
    + Field 3: resistance (Ω)
@@ -79,6 +82,12 @@ void iAQcore_read(uint16_t * eco2, uint16_t * stat, uint32_t * resist, uint16_t 
 }
 
 
+// Wrapper for blinking (off+on) 'blink' times, the total taking `ms` ms.
+void led_blink(int blink, int ms ) {
+  for( int i=0; i<2*blink; i++ ) { led_tgl(); delay(ms/2); } 
+}
+
+
 void setup() {
   // Enable serial
   Serial.begin(115200);
@@ -120,8 +129,10 @@ void setup() {
   // Enable ThingSpeak
   ThingSpeak.begin(client);
   Serial.println("init: ThingSpeak up");
-  
+
+  // End of setup() - delay helps distinguishing LED flashes
   led_off();
+  delay(3000);
 }
 
 
@@ -132,37 +143,42 @@ uint16_t etvoc= 125;
 
 
 void loop() {
-  // Signal start-of-measurement
-  led_on();
-  
   // Read the iAQ-Core
   iAQcore_read(&eco2,&stat,&resist,&etvoc);
   
-  // Print
+  // Measurement feedback
   if( stat & IAQCORE_STAT_I2CERR ) {
-    Serial.println("data: I2C error");
+    Serial.print("data: I2C error");
+    led_blink(3,100);
   } else if( stat & IAQCORE_STAT_ERROR ) {
-    Serial.println("data: chip broken");
+    Serial.print("data: chip broken");
+    led_blink(2,100);
   } else if( stat & IAQCORE_STAT_BUSY ) {
-    Serial.println("data: chip busy");
+    Serial.print("data: chip busy");
+    led_blink(1,100);
   } else {
     Serial.print("data: ");
     Serial.print("eco2=");   Serial.print(eco2);     Serial.print(" ppm,  ");
     Serial.print("stat=0x"); Serial.print(stat,HEX); Serial.print(",  ");
     Serial.print("resist="); Serial.print(resist);   Serial.print(" ohm,  ");
-    Serial.print("tvoc=");   Serial.print(etvoc);    Serial.print(" ppb  ");
-    Serial.println();
+    Serial.print("tvoc=");   Serial.print(etvoc);    Serial.print(" ppb");
   } 
 
-  // Send to ThingSpeak
+  // Prepare ThingSpeak package
   ThingSpeak.setField(1,(int)eco2);
   ThingSpeak.setField(2,(int)stat);
   ThingSpeak.setField(3,(int)resist);
   ThingSpeak.setField(4,(int)etvoc);
-  ThingSpeak.writeFields(thingspeakChannelId, thingspeakWriteApiKey);  
 
-  // Signal end-of-measurement
+  // Send to ThingSpeak 
+  led_on();
+  int http= ThingSpeak.writeFields(thingspeakChannelId, thingspeakWriteApiKey);  
   led_off();
+
+  // ThingSpeak upload feedback
+  Serial.print(",  http=");
+  Serial.println(http);
+  if( http!=200 ) led_blink(20,50); // Flash to show upload failure
   
   // Do not overfeed ThingSpeak
   delay(60000); 
