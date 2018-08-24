@@ -2,15 +2,15 @@
   iAQcore-thingspeak.ino - Upload iAQ-Core (indoor air quality) measurements to a ThingSpeak channel from an ESP8266.
   Created by Maarten Pennings 2017 Dec 9
 */
-#define VERSION "v8"
+#define VERSION "v9"
 
 
 /*
 This sketch assumes you have
 - an ESP8266 with an iAQ-Core attached to I2C (SDA/D2 and SCL/D1)
-   Arduino   Board: "NodeMCU 1.0 (ESP-12E Module)"
-   Arduino   lwIP Variant: "v2 Lower Memory"
-   Arduino   CPU Frequency: "80 MHz"
+    Core library version 2.4.0-rc2
+    Arduino   Board: "NodeMCU 1.0 (ESP-12E Module)"
+    Arduino   CPU Frequency: "80 MHz"
 - installed the I2C bus clear library (is optional)
    Goto https://github.com/maarten-pennings/I2Cbus, press Download zipfile
    Click Sketch > Include Library > Add .ZIP Library...  then select downloaded zip file
@@ -89,10 +89,19 @@ void led_blink(int blink, int ms ) {
 
 
 void setup() {
+  // Give user some time to connect USB serial
+  delay(3000);
+  
   // Enable serial
   Serial.begin(115200);
   Serial.println("");
   Serial.println("Starting iAQ-Core to ThingSpeak " VERSION);
+
+  // Print some version info
+  Serial.print("init: core "); Serial.print(ESP.getCoreVersion());
+  Serial.print(", sdk "); Serial.print(ESP.getSdkVersion());
+  Serial.print(", freq "); Serial.print(ESP.getCpuFreqMHz());
+  Serial.println();
 
   // Enable LED
   led_init();
@@ -177,7 +186,9 @@ void loop() {
 
   // ThingSpeak upload feedback
   Serial.print(",  http=");
-  Serial.println(http);
+  Serial.print(http);
+  Serial.print(", wifi=");
+  Serial.println(WiFi.status());
   if( http!=200 ) led_blink(20,50); // Flash to show upload failure
   
   // Do not overfeed ThingSpeak
