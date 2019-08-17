@@ -23,6 +23,9 @@ void setup() {
   
   // Enable I2C for Arduino pro mini or Nano [VDD to VCC/3V3, GND to GND, SDA to A4, SCL to A5]
   //Wire.begin(); 
+  
+  // Enable I2C for PlatformIO
+  //Wire.setSDA(SDA); Wire.setSCL(SCL); Wire.begin();
 
   // Enable iAQ-Core
   iaqcore.begin();
